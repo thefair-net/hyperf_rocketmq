@@ -1,0 +1,48 @@
+{
+    "name": "thefair/hyperf-rocketmq",
+    "type": "library",
+    "description": "The PHP library for hyperf rocketmq",
+    "keywords": [
+        "thefair"
+    ],
+    "homepage": "https://github.com/thefair-net/hyperf_rocketmq",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zhang Han",
+            "email": "zhanghan@thefair.net.cn"
+        },
+        {
+            "name": "Liu mingzhi",
+            "email": "liumingzhi@thefair.net.cn"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-swoole": ">=4.4"
+    },
+    "require-dev": {
+        "swoft/swoole-ide-helper": "^4.2",
+        "phpmd/phpmd": "^2.6",
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "mockery/mockery": "^1.0",
+        "doctrine/common": "^2.9",
+        "phpstan/phpstan": "^0.11.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "TheFairLib\\RocketMQ\\": "src/"
+        },
+        "files": [
+            "src/Library/Utils/Utility.php"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.1-dev"
+        },
+        "hyperf": {
+            "config": "TheFairLib\\ConfigProvider"
+        }
+    }
+}

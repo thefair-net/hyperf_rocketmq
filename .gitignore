@@ -1,0 +1,8 @@
+#忽略电脑中的文件
+.DS_Store
+.idea/*
+ide/*
+Ide/*
+vendor
+composer.lock
+.php_cs.cache
