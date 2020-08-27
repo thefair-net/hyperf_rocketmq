@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TheFairLib;
+namespace TheFairLib\RocketMQ;
 
 class ConfigProvider
 {
