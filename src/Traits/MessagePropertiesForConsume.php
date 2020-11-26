@@ -1,4 +1,5 @@
 <?php
+
 namespace TheFairLib\RocketMQ\Traits;
 
 use TheFairLib\RocketMQ\Constants;
@@ -90,5 +91,13 @@ trait MessagePropertiesForConsume
             return 0;
         }
         return (int)$temp;
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function toArray()
+    {
+        return $this->getMessageBody() ? json_decode($this->getMessageBody(), true, 512, JSON_BIGINT_AS_STRING) : [];
     }
 }
