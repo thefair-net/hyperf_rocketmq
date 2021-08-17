@@ -1,4 +1,5 @@
 <?php
+
 namespace TheFairLib\RocketMQ\Http;
 
 use Hyperf\Guzzle\CoroutineHandler;
@@ -32,7 +33,8 @@ class HttpClient
         $accessKey,
         $securityToken = null,
         Config $config = null
-    ) {
+    )
+    {
         if ($config == null) {
             $config = new Config;
         }
@@ -43,17 +45,24 @@ class HttpClient
             'handler' => HandlerStack::create(new CoroutineHandler()),
             'defaults' => [
                 'headers' => [
-                    'Host' => $endPoint
+                    'Host' => $endPoint,
                 ],
                 'proxy' => $config->getProxy(),
-                'expect' => $config->getExpectContinue()
-            ]
+                'expect' => $config->getExpectContinue(),
+            ],
         ]);
         $this->requestTimeout = $config->getRequestTimeout();
         $this->connectTimeout = $config->getConnectTimeout();
         $this->securityToken = $securityToken;
         $this->endpoint = $endPoint;
-        $this->agent = "mq-php-sdk/1.0.1(GuzzleHttp/" . \GuzzleHttp\Client::VERSION . " PHP/" . PHP_VERSION . ")";
+//        $this->agent = "mq-php-sdk/1.0.1(GuzzleHttp/" . \GuzzleHttp\Client::MAJOR_VERSION . " PHP/" . PHP_VERSION . ")";
+        $guzzleVersion = '';
+        if (defined('\GuzzleHttp\Client::VERSION')) {
+            $guzzleVersion = \GuzzleHttp\Client::VERSION;
+        } else {
+            $guzzleVersion = \GuzzleHttp\Client::MAJOR_VERSION;
+        }
+        $this->agent = Constants::CLIENT_VERSION . $guzzleVersion . " PHP/" . PHP_VERSION . ")";
     }
 
     private function addRequiredHeaders(BaseRequest &$request)
@@ -89,7 +98,8 @@ class HttpClient
         BaseRequest $request,
         BaseResponse &$response,
         AsyncCallback $callback = null
-    ) {
+    )
+    {
         $promise = $this->sendRequestAsyncInternal($request, $response, $callback);
         return new MQPromise($promise, $response);
     }
@@ -104,7 +114,7 @@ class HttpClient
     {
         $this->addRequiredHeaders($request);
 
-        $parameters = array('exceptions' => false, 'http_errors' => false);
+        $parameters = ['exceptions' => false, 'http_errors' => false];
         $queryString = $request->getQueryString();
         $body = $request->getBody();
         if ($queryString != null) {
