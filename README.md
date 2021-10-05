@@ -1,5 +1,7 @@
 # 使用说明
 
+主要代码来自于阿里云官方 sdk：`https://github.com/aliyunmq/mq-http-php-sdk`
+
 hyperf rocketmq 目前只支持 http/https
 
 ## 伪代码 demo 
