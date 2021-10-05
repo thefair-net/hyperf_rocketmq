@@ -1,4 +1,5 @@
 <?php
+
 namespace TheFairLib\RocketMQ;
 
 use TheFairLib\RocketMQ\Exception\InvalidArgumentException;
@@ -10,13 +11,11 @@ class MQClient
 
     /**
      *
-     * @param endPoint: the host url
-     *               could be "http://$accountId.mqrest.cn-hangzhou.aliyuncs.com"
-     *               accountId could be found in aliyun.com
-     * @param accessId: accessId from aliyun.com
-     * @param accessKey: accessKey from aliyun.com
-     * @param securityToken: securityToken from aliyun.com
-     * @param config: necessary configs
+     * @param $endPoint
+     * @param $accessId
+     * @param $accessKey
+     * @param null $securityToken
+     * @param Config|null $config config: necessary configs
      */
     public function __construct(
         $endPoint,
@@ -47,8 +46,8 @@ class MQClient
     /**
      * Returns a Producer reference for publish message to topic
      *
-     * @param string $instanceId: instance id
-     * @param string $topicName:  the topic name
+     * @param string $instanceId : instance id
+     * @param string $topicName :  the topic name
      *
      * @return MQProducer: the Producer instance
      */
@@ -63,9 +62,9 @@ class MQClient
     /**
      * Returns a Transaction Producer reference for publish message to topic
      *
-     * @param string $instanceId: instance id
-     * @param string $topicName:  the topic name
-     * @param string $groupId:  the group id
+     * @param string $instanceId : instance id
+     * @param string $topicName :  the topic name
+     * @param string $groupId :  the group id
      *
      * @return MQTransProducer: the Transaction Producer instance
      */
@@ -80,10 +79,10 @@ class MQClient
     /**
      * Returns a Consumer reference for consume and ack message to topic
      *
-     * @param string $instanceId: instance id
-     * @param string $topicName:  the topic name
-     * @param string $consumer: the consumer name / ons cid
-     * @param string $messageTag: filter tag for consumer. If not empty, only consume the message which's messageTag is equal to it.
+     * @param string $instanceId : instance id
+     * @param string $topicName :  the topic name
+     * @param string $consumer : the consumer name / ons cid
+     * @param string $messageTag : filter tag for consumer. If not empty, only consume the message which's messageTag is equal to it.
      *
      * @return MQConsumer: the Consumer instance
      */

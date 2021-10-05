@@ -19,7 +19,13 @@
     ],
     "require": {
         "php": ">=7.3",
-        "hyperf/guzzle": "~2.1.0"
+        "hyperf/guzzle": "~2.1.0",
+        "ext-xmlreader": "*",
+        "ext-xmlwriter": "*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "phpstan/phpstan": "^0.12"
     },
     "autoload": {
         "psr-4": {

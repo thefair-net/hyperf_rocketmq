@@ -2,6 +2,7 @@
 
 namespace TheFairLib\RocketMQ\Http;
 
+use GuzzleHttp\Client;
 use Hyperf\Guzzle\CoroutineHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Exception\TransferException;
@@ -18,7 +19,7 @@ use TheFairLib\RocketMQ\Signature\Signature;
 class HttpClient
 {
     private $client;
-    private $endpoint;
+    protected $endpoint;
     private $accessId;
     private $accessKey;
     private $securityToken;
@@ -33,14 +34,13 @@ class HttpClient
         $accessKey,
         $securityToken = null,
         Config $config = null
-    )
-    {
+    ) {
         if ($config == null) {
             $config = new Config;
         }
         $this->accessId = $accessId;
         $this->accessKey = $accessKey;
-        $this->client = new \GuzzleHttp\Client([
+        $this->client = new Client([
             'base_uri' => $endPoint,
             'handler' => HandlerStack::create(new CoroutineHandler()),
             'defaults' => [
@@ -56,12 +56,7 @@ class HttpClient
         $this->securityToken = $securityToken;
         $this->endpoint = $endPoint;
 //        $this->agent = "mq-php-sdk/1.0.1(GuzzleHttp/" . \GuzzleHttp\Client::MAJOR_VERSION . " PHP/" . PHP_VERSION . ")";
-        $guzzleVersion = '';
-        if (defined('\GuzzleHttp\Client::VERSION')) {
-            $guzzleVersion = \GuzzleHttp\Client::VERSION;
-        } else {
-            $guzzleVersion = \GuzzleHttp\Client::MAJOR_VERSION;
-        }
+        $guzzleVersion = Client::MAJOR_VERSION;
         $this->agent = Constants::CLIENT_VERSION . $guzzleVersion . " PHP/" . PHP_VERSION . ")";
     }
 
@@ -98,8 +93,7 @@ class HttpClient
         BaseRequest $request,
         BaseResponse &$response,
         AsyncCallback $callback = null
-    )
-    {
+    ) {
         $promise = $this->sendRequestAsyncInternal($request, $response, $callback);
         return new MQPromise($promise, $response);
     }

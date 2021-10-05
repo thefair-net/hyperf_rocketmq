@@ -1,0 +1,21 @@
+# Magic behaviour with __get, __set, __call and __callStatic is not exactly static analyser-friendly :)
+# Fortunately, You can ingore it by the following config.
+#
+# vendor/bin/phpstan analyse app --memory-limit 200M -l 0
+#
+parameters:
+    excludes_analyse:
+#        - config/routes.php
+#        - publish/bin/dev_start.php
+#        - publish/Constants/InfoCode.php
+#        - publish/Constants/ServerCode.php
+#        - publish/test/Cases/ExampleTest.php
+#        - publish/test/Cases/DocTest.php
+#        - src/Exception/BusinessException.php
+#    ignoreErrors:
+#    - '#Class [a-zA-Z0-9\\_]+ was not found while trying to analyse it - autoloading is probably not configured properly.#'
+#
+#          message: '#[.*]?autoloading is probably not configured properly.#'
+#          paths:
+#            - publish/test/*
+#    - '#Static call to instance method Hyperf\\DbConnection\\Db::[a-zA-Z0-9\\_]+\(\)#'

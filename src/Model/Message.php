@@ -3,6 +3,7 @@ namespace TheFairLib\RocketMQ\Model;
 
 use TheFairLib\RocketMQ\Constants;
 use TheFairLib\RocketMQ\Traits\MessagePropertiesForConsume;
+use XMLReader;
 
 class Message
 {
@@ -32,7 +33,7 @@ class Message
         $this->properties = $properties;
     }
 
-    public static function fromXML(\XMLReader $xmlReader)
+    public static function fromXML(XMLReader $xmlReader): Message
     {
         $messageId = null;
         $messageBodyMD5 = null;
@@ -47,65 +48,65 @@ class Message
 
         while ($xmlReader->read()) {
             switch ($xmlReader->nodeType) {
-            case \XMLReader::ELEMENT:
+            case XMLReader::ELEMENT:
                 switch ($xmlReader->name) {
                 case Constants::MESSAGE_ID:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $messageId = $xmlReader->value;
                     }
                     break;
                 case Constants::MESSAGE_BODY_MD5:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $messageBodyMD5 = $xmlReader->value;
                     }
                     break;
                 case Constants::MESSAGE_BODY:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $messageBody = $xmlReader->value;
                     }
                     break;
                 case Constants::PUBLISH_TIME:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $publishTime = $xmlReader->value;
                     }
                     break;
                 case Constants::NEXT_CONSUME_TIME:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $nextConsumeTime = $xmlReader->value;
                     }
                     break;
                 case Constants::FIRST_CONSUME_TIME:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $firstConsumeTime = $xmlReader->value;
                     }
                     break;
                 case Constants::CONSUMED_TIMES:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $consumedTimes = $xmlReader->value;
                     }
                     break;
                 case Constants::RECEIPT_HANDLE:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $receiptHandle = $xmlReader->value;
                     }
                     break;
                 case Constants::MESSAGE_TAG:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $messageTag = $xmlReader->value;
                     }
                     break;
                 case Constants::MESSAGE_PROPERTIES:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $propertiesString = $xmlReader->value;
                         if ($propertiesString != null) {
                             $kvArray = explode("|", $propertiesString);
@@ -120,9 +121,9 @@ class Message
                     break;
                 }
                 break;
-            case \XMLReader::END_ELEMENT:
+            case XMLReader::END_ELEMENT:
                 if ($xmlReader->name == 'Message') {
-                    $message = new Message(
+                    return new Message(
                         $messageId,
                         $messageBodyMD5,
                         $messageBody,
@@ -134,13 +135,12 @@ class Message
                         $messageTag,
                         $properties
                     );
-                    return $message;
                 }
                 break;
             }
         }
 
-        $message = new Message(
+        return new Message(
             $messageId,
             $messageBodyMD5,
             $messageBody,
@@ -152,7 +152,5 @@ class Message
             $messageTag,
             $properties
         );
-
-        return $message;
     }
 }

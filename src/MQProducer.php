@@ -13,7 +13,7 @@ class MQProducer
     protected $topicName;
     protected $client;
 
-    public function __construct(HttpClient $client, $instanceId = null, $topicName)
+    public function __construct(HttpClient $client, $instanceId, $topicName)
     {
         if (empty($topicName)) {
             throw new InvalidArgumentException(400, "TopicName is null");

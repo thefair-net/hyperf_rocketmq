@@ -3,6 +3,7 @@ namespace TheFairLib\RocketMQ\Requests;
 
 use TheFairLib\RocketMQ\Constants;
 use TheFairLib\RocketMQ\Traits\MessagePropertiesForPublish;
+use XMLWriter;
 
 class PublishMessageRequest extends BaseRequest
 {
@@ -25,9 +26,9 @@ class PublishMessageRequest extends BaseRequest
         return $this->topicName;
     }
 
-    public function generateBody()
+    public function generateBody(): string
     {
-        $xmlWriter = new \XMLWriter;
+        $xmlWriter = new XMLWriter;
         $xmlWriter->openMemory();
         $xmlWriter->startDocument("1.0", "UTF-8");
         $xmlWriter->startElementNS(null, "Message", Constants::XML_NAMESPACE);
@@ -37,7 +38,7 @@ class PublishMessageRequest extends BaseRequest
         return $xmlWriter->outputMemory();
     }
 
-    public function generateQueryString()
+    public function generateQueryString(): ?string
     {
         if ($this->instanceId != null && $this->instanceId != "") {
             return http_build_query(array("ns" => $this->instanceId));

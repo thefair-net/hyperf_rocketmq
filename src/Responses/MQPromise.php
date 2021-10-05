@@ -16,21 +16,24 @@ class MQPromise
         $this->response = $response;
     }
 
-    public function isCompleted()
+    public function isCompleted(): bool
     {
         return $this->promise->getState() != 'pending';
     }
 
-    public function getResponse()
+    public function getResponse(): BaseResponse
     {
         return $this->response;
     }
 
-    public function getState()
+    public function getState(): string
     {
         return $this->promise->getState();
     }
 
+    /**
+     * @return mixed
+     */
     public function wait()
     {
         try {

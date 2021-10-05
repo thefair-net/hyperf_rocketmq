@@ -6,7 +6,7 @@ use TheFairLib\RocketMQ\Requests\BaseRequest;
 
 class Signature
 {
-    public static function SignRequest($accessKey, BaseRequest &$request)
+    public static function SignRequest($accessKey, BaseRequest &$request): string
     {
         $headers = $request->getHeaders();
         $contentMd5 = "";

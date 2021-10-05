@@ -3,7 +3,7 @@ namespace TheFairLib\RocketMQ\Traits;
 
 use TheFairLib\RocketMQ\Constants;
 use TheFairLib\RocketMQ\Exception\MQException;
-use TheFairLib\RocketMQ\Model\MessageAttributes;
+use XMLWriter;
 
 trait MessagePropertiesForPublish
 {
@@ -70,7 +70,7 @@ trait MessagePropertiesForPublish
         return $this->properties;
     }
 
-    public function writeMessagePropertiesForPublishXML(\XMLWriter $xmlWriter)
+    public function writeMessagePropertiesForPublishXML(XMLWriter $xmlWriter)
     {
         if ($this->messageBody != null) {
             $xmlWriter->writeElement(Constants::MESSAGE_BODY, $this->messageBody);
@@ -102,7 +102,7 @@ trait MessagePropertiesForPublish
         }
     }
 
-    private function isContainSpecialChar($str)
+    private function isContainSpecialChar($str): bool
     {
         return strpos($str, "&") !== false
             || strpos($str, "\"") !== false || strpos($str, "'") !== false

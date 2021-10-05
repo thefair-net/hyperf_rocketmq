@@ -1,7 +1,13 @@
 <?php
+
 namespace TheFairLib\RocketMQ;
 
+use TheFairLib\RocketMQ\Exception\AckMessageException;
 use TheFairLib\RocketMQ\Exception\InvalidArgumentException;
+use TheFairLib\RocketMQ\Exception\MessageNotExistException;
+use TheFairLib\RocketMQ\Exception\MQException;
+use TheFairLib\RocketMQ\Exception\ReceiptHandleErrorException;
+use TheFairLib\RocketMQ\Exception\TopicNotExistException;
 use TheFairLib\RocketMQ\Http\HttpClient;
 use TheFairLib\RocketMQ\Requests\ConsumeMessageRequest;
 use TheFairLib\RocketMQ\Requests\AckMessageRequest;
@@ -12,7 +18,9 @@ class MQTransProducer extends MQProducer
 {
     private $groupId;
 
-    public function __construct(HttpClient $client, $instanceId = null, $topicName, $groupId)
+    protected $messageTag;
+
+    public function __construct(HttpClient $client, $instanceId, $topicName, $groupId)
     {
         if (empty($groupId)) {
             throw new InvalidArgumentException(400, "GroupId is null");
@@ -24,19 +32,17 @@ class MQTransProducer extends MQProducer
     /**
      * consume transaction half message
      *
-     * @param $numOfMessages: consume how many messages once, 1~16
-     * @param $waitSeconds: if > 0, means the time(second) the request holden at server if there is no message to consume.
+     * @param $numOfMessages : consume how many messages once, 1~16
+     * @param int $waitSeconds : if > 0, means the time(second) the request holden at server if there is no message to consume.
      *                      If <= 0, means the server will response back if there is no message to consume.
      *                      It's value should be 1~30
-     *
-     * @return Message
      *
      * @throws TopicNotExistException if queue does not exist
      * @throws MessageNotExistException if no message exists
      * @throws InvalidArgumentException if the argument is invalid
      * @throws MQException if any other exception happends
      */
-    public function consumeHalfMessage($numOfMessages, $waitSeconds = -1)
+    public function consumeHalfMessage($numOfMessages, int $waitSeconds = -1)
     {
         if ($numOfMessages < 0 || $numOfMessages > 16) {
             throw new InvalidArgumentException(400, "numOfMessages should be 1~16");
@@ -53,7 +59,7 @@ class MQTransProducer extends MQProducer
     /**
      * commit transaction message
      *
-     * @param $receiptHandle:
+     * @param $receiptHandle :
      *            $receiptHandle, which is got from consumeHalfMessage or publishMessage
      *
      * @return AckMessageResponse
@@ -64,9 +70,9 @@ class MQTransProducer extends MQProducer
      * @throws AckMessageException if any message not deleted
      * @throws MQException if any other exception happends
      */
-    public function commit($receiptHandle)
+    public function commit($receiptHandle): AckMessageResponse
     {
-        $request = new AckMessageRequest($this->instanceId, $this->topicName, $this->groupId, array($receiptHandle));
+        $request = new AckMessageRequest($this->instanceId, $this->topicName, $this->groupId, [$receiptHandle]);
         $request->setTrans(Constants::TRANSACTION_COMMIT);
         $response = new AckMessageResponse();
         return $this->client->sendRequest($request, $response);
@@ -76,7 +82,7 @@ class MQTransProducer extends MQProducer
     /**
      * rollback transaction message
      *
-     * @param $receiptHandle:
+     * @param $receiptHandle :
      *            $receiptHandle, which is got from consumeHalfMessage or publishMessage
      *
      * @return AckMessageResponse
@@ -87,9 +93,9 @@ class MQTransProducer extends MQProducer
      * @throws AckMessageException if any message not deleted
      * @throws MQException if any other exception happends
      */
-    public function rollback($receiptHandle)
+    public function rollback($receiptHandle): AckMessageResponse
     {
-        $request = new AckMessageRequest($this->instanceId, $this->topicName, $this->groupId, array($receiptHandle));
+        $request = new AckMessageRequest($this->instanceId, $this->topicName, $this->groupId, [$receiptHandle]);
         $request->setTrans(Constants::TRANSACTION_ROLLBACK);
         $response = new AckMessageResponse();
         return $this->client->sendRequest($request, $response);

@@ -1,6 +1,7 @@
 <?php
 namespace TheFairLib\RocketMQ\Responses;
 
+use Exception;
 use TheFairLib\RocketMQ\Common\XMLParser;
 use TheFairLib\RocketMQ\Constants;
 use TheFairLib\RocketMQ\Exception\AckMessageException;
@@ -9,6 +10,8 @@ use TheFairLib\RocketMQ\Exception\MQException;
 use TheFairLib\RocketMQ\Exception\ReceiptHandleErrorException;
 use TheFairLib\RocketMQ\Exception\TopicNotExistException;
 use TheFairLib\RocketMQ\Model\AckMessageErrorItem;
+use Throwable;
+use XMLReader;
 
 class AckMessageResponse extends BaseResponse
 {
@@ -33,7 +36,7 @@ class AckMessageResponse extends BaseResponse
 
         try {
             while ($xmlReader->read()) {
-                if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
+                if ($xmlReader->nodeType == XMLReader::ELEMENT) {
                     switch ($xmlReader->name) {
                     case Constants::ERROR:
                         $this->parseNormalErrorResponse($xmlReader);
@@ -44,7 +47,7 @@ class AckMessageResponse extends BaseResponse
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             if ($exception != null) {
                 throw $exception;
             } elseif ($e instanceof MQException) {
@@ -52,8 +55,6 @@ class AckMessageResponse extends BaseResponse
             } else {
                 throw new MQException($statusCode, $e->getMessage());
             }
-        } catch (\Throwable $t) {
-            throw new MQException($statusCode, $t->getMessage());
         }
     }
 
@@ -62,7 +63,7 @@ class AckMessageResponse extends BaseResponse
         $ex = new AckMessageException($this->statusCode, "AckMessage Failed For Some ReceiptHandles");
         $ex->setRequestId($this->getRequestId());
         while ($xmlReader->read()) {
-            if ($xmlReader->nodeType == \XMLReader::ELEMENT && $xmlReader->name == Constants::ERROR) {
+            if ($xmlReader->nodeType == XMLReader::ELEMENT && $xmlReader->name == Constants::ERROR) {
                 $ex->addAckMessageErrorItem(AckMessageErrorItem::fromXML($xmlReader));
             }
         }

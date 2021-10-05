@@ -2,6 +2,7 @@
 namespace TheFairLib\RocketMQ\Model;
 
 use TheFairLib\RocketMQ\Constants;
+use XMLReader;
 
 class AckMessageErrorItem
 {
@@ -31,7 +32,7 @@ class AckMessageErrorItem
         return $this->receiptHandle;
     }
 
-    public static function fromXML($xmlReader)
+    public static function fromXML($xmlReader): AckMessageErrorItem
     {
         $errorCode = null;
         $errorMessage = null;
@@ -39,29 +40,29 @@ class AckMessageErrorItem
 
         while ($xmlReader->read()) {
             switch ($xmlReader->nodeType) {
-            case \XMLReader::ELEMENT:
+            case XMLReader::ELEMENT:
                 switch ($xmlReader->name) {
                 case Constants::ERROR_CODE:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $errorCode = $xmlReader->value;
                     }
                     break;
                 case Constants::ERROR_MESSAGE:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $errorMessage = $xmlReader->value;
                     }
                     break;
                 case Constants::RECEIPT_HANDLE:
                     $xmlReader->read();
-                    if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                    if ($xmlReader->nodeType == XMLReader::TEXT) {
                         $receiptHandle = $xmlReader->value;
                     }
                     break;
                 }
                 break;
-            case \XMLReader::END_ELEMENT:
+            case XMLReader::END_ELEMENT:
                 if ($xmlReader->name == Constants::ERROR) {
                     return new AckMessageErrorItem($errorCode, $errorMessage, $receiptHandle);
                 }

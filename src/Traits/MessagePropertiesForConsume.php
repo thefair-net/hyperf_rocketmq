@@ -111,5 +111,4 @@ trait MessagePropertiesForConsume
     {
         return $this->getProperty(Constants::MESSAGE_PROPERTIES_SHARDING);
     }
-
 }
