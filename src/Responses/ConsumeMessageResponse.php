@@ -1,12 +1,15 @@
 <?php
 namespace TheFairLib\RocketMQ\Responses;
 
+use Exception;
 use TheFairLib\RocketMQ\Common\XMLParser;
 use TheFairLib\RocketMQ\Constants;
 use TheFairLib\RocketMQ\Exception\MessageNotExistException;
 use TheFairLib\RocketMQ\Exception\MQException;
 use TheFairLib\RocketMQ\Exception\TopicNotExistException;
 use TheFairLib\RocketMQ\Model\Message;
+use Throwable;
+use XMLReader;
 
 class ConsumeMessageResponse extends BaseResponse
 {
@@ -17,12 +20,12 @@ class ConsumeMessageResponse extends BaseResponse
         $this->messages = array();
     }
 
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->messages;
     }
 
-    public function parseResponse($statusCode, $content)
+    public function parseResponse($statusCode, $content): array
     {
         $this->statusCode = $statusCode;
         if ($statusCode == 200) {
@@ -35,15 +38,15 @@ class ConsumeMessageResponse extends BaseResponse
 
         try {
             while ($xmlReader->read()) {
-                if ($xmlReader->nodeType == \XMLReader::ELEMENT
+                if ($xmlReader->nodeType == XMLReader::ELEMENT
                     && $xmlReader->name == 'Message') {
                     $this->messages[] = Message::fromXML($xmlReader);
                 }
             }
             return $this->messages;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new MQException($statusCode, $e->getMessage(), $e);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new MQException($statusCode, $t->getMessage(), $t);
         }
     }
@@ -62,7 +65,7 @@ class ConsumeMessageResponse extends BaseResponse
                 throw new MessageNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
             }
             throw new MQException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($exception != null) {
                 throw $exception;
             } elseif ($e instanceof MQException) {
@@ -70,7 +73,7 @@ class ConsumeMessageResponse extends BaseResponse
             } else {
                 throw new MQException($statusCode, $e->getMessage());
             }
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new MQException($statusCode, $t->getMessage());
         }
     }

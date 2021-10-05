@@ -1,7 +1,10 @@
 <?php
+
 namespace TheFairLib\RocketMQ\Responses;
 
+use Exception;
 use TheFairLib\RocketMQ\Exception\MQException;
+use XMLReader;
 
 abstract class BaseResponse
 {
@@ -34,17 +37,19 @@ abstract class BaseResponse
         return $this->requestId;
     }
 
-    protected function loadXmlContent($content)
+    protected function loadXmlContent($content): XMLReader
     {
-        $xmlReader = new \XMLReader();
+        $xmlReader = new XMLReader();
         $isXml = $xmlReader->XML($content);
         if ($isXml === false) {
             throw new MQException($this->statusCode, $content);
         }
         try {
+            $i = 0;
             while ($xmlReader->read()) {
+                $i++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new MQException($this->statusCode, $content);
         }
         $xmlReader->XML($content);

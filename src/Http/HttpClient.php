@@ -3,6 +3,7 @@
 namespace TheFairLib\RocketMQ\Http;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise\PromiseInterface;
 use Hyperf\Guzzle\CoroutineHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Exception\TransferException;
@@ -93,7 +94,8 @@ class HttpClient
         BaseRequest $request,
         BaseResponse &$response,
         AsyncCallback $callback = null
-    ) {
+    ): MQPromise
+    {
         $promise = $this->sendRequestAsyncInternal($request, $response, $callback);
         return new MQPromise($promise, $response);
     }
@@ -104,7 +106,13 @@ class HttpClient
         return $promise->wait();
     }
 
-    private function sendRequestAsyncInternal(BaseRequest &$request, BaseResponse &$response, AsyncCallback $callback = null)
+    /**
+     * @param BaseRequest $request
+     * @param BaseResponse $response
+     * @param AsyncCallback|null $callback
+     * @return PromiseInterface
+     */
+    private function sendRequestAsyncInternal(BaseRequest &$request, BaseResponse &$response, AsyncCallback $callback = null): PromiseInterface
     {
         $this->addRequiredHeaders($request);
 

@@ -51,7 +51,7 @@ class MQClient
      *
      * @return MQProducer: the Producer instance
      */
-    public function getProducer($instanceId, $topicName)
+    public function getProducer(string $instanceId, string $topicName): MQProducer
     {
         if ($topicName == null || $topicName == "") {
             throw new InvalidArgumentException(400, "TopicName is null or empty");
@@ -68,7 +68,7 @@ class MQClient
      *
      * @return MQTransProducer: the Transaction Producer instance
      */
-    public function getTransProducer($instanceId, $topicName, $groupId)
+    public function getTransProducer(string $instanceId, string $topicName, string $groupId): MQTransProducer
     {
         if ($topicName == null || $topicName == "") {
             throw new InvalidArgumentException(400, "TopicName is null or empty");
@@ -82,11 +82,11 @@ class MQClient
      * @param string $instanceId : instance id
      * @param string $topicName :  the topic name
      * @param string $consumer : the consumer name / ons cid
-     * @param string $messageTag : filter tag for consumer. If not empty, only consume the message which's messageTag is equal to it.
+     * @param string|null $messageTag : filter tag for consumer. If not empty, only consume the message which's messageTag is equal to it.
      *
      * @return MQConsumer: the Consumer instance
      */
-    public function getConsumer($instanceId, $topicName, $consumer, $messageTag = null)
+    public function getConsumer(string $instanceId, string $topicName, string $consumer, string $messageTag = null): MQConsumer
     {
         if ($topicName == null || $topicName == "") {
             throw new InvalidArgumentException(400, "TopicName is null or empty");

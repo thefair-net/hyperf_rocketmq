@@ -1,9 +1,11 @@
 <?php
 namespace TheFairLib\RocketMQ;
 
+use TheFairLib\RocketMQ\Exception\AckMessageException;
 use TheFairLib\RocketMQ\Exception\InvalidArgumentException;
 use TheFairLib\RocketMQ\Exception\MessageNotExistException;
 use TheFairLib\RocketMQ\Exception\MQException;
+use TheFairLib\RocketMQ\Exception\ReceiptHandleErrorException;
 use TheFairLib\RocketMQ\Exception\TopicNotExistException;
 use TheFairLib\RocketMQ\Http\HttpClient;
 use TheFairLib\RocketMQ\Model\Message;
@@ -29,7 +31,7 @@ class MQConsumer
      * @param $consumer
      * @param null $messageTag
      */
-    public function __construct(HttpClient $client, $instanceId = null, $topicName, $consumer, $messageTag = null)
+    public function __construct(HttpClient $client, $instanceId, $topicName, $consumer, $messageTag = null)
     {
         if (empty($topicName)) {
             throw new InvalidArgumentException(400, "TopicName is null");
@@ -70,7 +72,7 @@ class MQConsumer
      * consume message
      *
      * @param $numOfMessages: consume how many messages once, 1~16
-     * @param $waitSeconds: if > 0, means the time(second) the request holden at server if there is no message to consume.
+     * @param int $waitSeconds: if > 0, means the time(second) the request holden at server if there is no message to consume.
      *                      If <= 0, means the server will response back if there is no message to consume.
      *                      It's value should be 1~30
      *
@@ -81,7 +83,7 @@ class MQConsumer
      * @throws InvalidArgumentException if the argument is invalid
      * @throws MQException if any other exception happends
      */
-    public function consumeMessage($numOfMessages, $waitSeconds = -1)
+    public function consumeMessage($numOfMessages, int $waitSeconds = -1): array
     {
         if ($numOfMessages < 0 || $numOfMessages > 16) {
             throw new InvalidArgumentException(400, "numOfMessages should be 1~16");
@@ -104,7 +106,7 @@ class MQConsumer
      * This interface is suitable for globally order and partitionally order messages, and could be used in multi-thread scenes.
      *
      * @param $numOfMessages: consume how many messages once, 1~16
-     * @param $waitSeconds: if > 0, means the time(second) the request holden at server if there is no message to consume.
+     * @param int $waitSeconds: if > 0, means the time(second) the request holden at server if there is no message to consume.
      *                      If <= 0, means the server will response back if there is no message to consume.
      *                      It's value should be 1~30
      *
@@ -115,7 +117,7 @@ class MQConsumer
      * @throws InvalidArgumentException if the argument is invalid
      * @throws MQException if any other exception happends
      */
-    public function consumeMessageOrderly($numOfMessages, $waitSeconds = -1)
+    public function consumeMessageOrderly($numOfMessages, int $waitSeconds = -1): Message
     {
         if ($numOfMessages < 0 || $numOfMessages > 16) {
             throw new InvalidArgumentException(400, "numOfMessages should be 1~16");
@@ -143,7 +145,7 @@ class MQConsumer
      * @throws AckMessageException if any message not deleted
      * @throws MQException if any other exception happends
      */
-    public function ackMessage($receiptHandles)
+    public function ackMessage($receiptHandles): AckMessageResponse
     {
         $request = new AckMessageRequest($this->instanceId, $this->topicName, $this->consumer, $receiptHandles);
         $response = new AckMessageResponse();

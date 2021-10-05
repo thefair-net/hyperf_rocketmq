@@ -27,7 +27,7 @@ class Config
         $this->proxy = $proxy;
     }
 
-    public function getRequestTimeout()
+    public function getRequestTimeout(): int
     {
         return $this->requestTimeout;
     }
@@ -42,12 +42,12 @@ class Config
         $this->connectTimeout = $connectTimeout;
     }
 
-    public function getConnectTimeout()
+    public function getConnectTimeout(): int
     {
         return $this->connectTimeout;
     }
 
-    public function getExpectContinue()
+    public function getExpectContinue(): bool
     {
         return $this->expectContinue;
     }

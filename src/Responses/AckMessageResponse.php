@@ -1,7 +1,6 @@
 <?php
 namespace TheFairLib\RocketMQ\Responses;
 
-use Exception;
 use TheFairLib\RocketMQ\Common\XMLParser;
 use TheFairLib\RocketMQ\Constants;
 use TheFairLib\RocketMQ\Exception\AckMessageException;

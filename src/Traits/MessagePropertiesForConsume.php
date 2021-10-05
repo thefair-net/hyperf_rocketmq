@@ -65,6 +65,8 @@ trait MessagePropertiesForConsume
 
     /**
      * 消息KEY
+     *
+     * @return mixed|null
      */
     public function getMessageKey()
     {
@@ -73,8 +75,10 @@ trait MessagePropertiesForConsume
 
     /**
      * 定时消息时间戳，单位毫秒（ms
+     *
+     * @return int
      */
-    public function getStartDeliverTime()
+    public function getStartDeliverTime(): int
     {
         $temp = $this->getProperty(Constants::MESSAGE_PROPERTIES_TIMER_KEY);
         if ($temp === null) {
@@ -86,7 +90,7 @@ trait MessagePropertiesForConsume
     /**
      * 事务消息第一次消息回查的最快时间，单位秒
      */
-    public function getTransCheckImmunityTime()
+    public function getTransCheckImmunityTime(): int
     {
         $temp = $this->getProperty(Constants::MESSAGE_PROPERTIES_TRANS_CHECK_KEY);
         if ($temp === null) {

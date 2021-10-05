@@ -41,6 +41,6 @@ class Signature
 
         $stringToSign = strtoupper($request->getMethod()) . "\n" . $contentMd5 . "\n" . $contentType . "\n" . $date . "\n" . $canonicalizedHeaders . "\n" . $canonicalizedResource;
 
-        return base64_encode(hash_hmac("sha1", $stringToSign, $accessKey, $raw_output = true));
+        return base64_encode(hash_hmac("sha1", $stringToSign, $accessKey, true));
     }
 }

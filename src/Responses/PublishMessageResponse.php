@@ -1,6 +1,7 @@
 <?php
 namespace TheFairLib\RocketMQ\Responses;
 
+use Exception;
 use TheFairLib\RocketMQ\Common\XMLParser;
 use TheFairLib\RocketMQ\Constants;
 use TheFairLib\RocketMQ\Exception\InvalidArgumentException;
@@ -9,6 +10,8 @@ use TheFairLib\RocketMQ\Exception\MQException;
 use TheFairLib\RocketMQ\Exception\TopicNotExistException;
 use TheFairLib\RocketMQ\Model\Message;
 use TheFairLib\RocketMQ\Model\TopicMessage;
+use Throwable;
+use XMLReader;
 
 class PublishMessageResponse extends BaseResponse
 {
@@ -16,7 +19,7 @@ class PublishMessageResponse extends BaseResponse
     {
     }
 
-    public function parseResponse($statusCode, $content)
+    public function parseResponse($statusCode, $content): TopicMessage
     {
         $this->statusCode = $statusCode;
         if ($statusCode == 201) {
@@ -28,16 +31,16 @@ class PublishMessageResponse extends BaseResponse
         $xmlReader = $this->loadXmlContent($content);
         try {
             return $this->readMessageIdAndMD5XML($xmlReader);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new MQException($statusCode, $e->getMessage(), $e);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new MQException($statusCode, $t->getMessage());
         }
     }
 
-    public function readMessageIdAndMD5XML(\XMLReader $xmlReader)
+    public function readMessageIdAndMD5XML(XMLReader $xmlReader): TopicMessage
     {
-        $message = Message::fromXML($xmlReader, true);
+        $message = Message::fromXML($xmlReader);
         $topicMessage = new TopicMessage(null);
         $topicMessage->setMessageId($message->getMessageId());
         $topicMessage->setMessageBodyMD5($message->getMessageBodyMD5());
@@ -62,7 +65,7 @@ class PublishMessageResponse extends BaseResponse
                 throw new MalformedXMLException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
             }
             throw new MQException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($exception != null) {
                 throw $exception;
             } elseif ($e instanceof MQException) {
@@ -70,7 +73,7 @@ class PublishMessageResponse extends BaseResponse
             } else {
                 throw new MQException($statusCode, $e->getMessage());
             }
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new MQException($statusCode, $t->getMessage());
         }
     }
