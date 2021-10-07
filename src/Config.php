@@ -16,7 +16,7 @@ class Config
     public function __construct()
     {
         $this->proxy = null;
-        $this->requestTimeout = 10; // 10 seconds
+        $this->requestTimeout = 30; // 30 seconds
         $this->connectTimeout = 3;  // 3 seconds
         $this->expectContinue = false;
         $this->handler = HandlerStack::create(new CoroutineHandler());
