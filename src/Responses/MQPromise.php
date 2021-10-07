@@ -1,4 +1,5 @@
 <?php
+
 namespace TheFairLib\RocketMQ\Responses;
 
 use GuzzleHttp\Exception\TransferException;
@@ -44,7 +45,7 @@ class MQPromise
             }
         } catch (TransferException $e) {
             $message = $e->getMessage();
-            if ($e->hasResponse()) {
+            if (method_exists($e, 'hasResponse') && $e->hasResponse()) {
                 $message = $e->getResponse()->getBody();
             }
             $this->response->parseErrorResponse($e->getCode(), $message);
