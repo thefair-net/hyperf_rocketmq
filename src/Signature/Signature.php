@@ -1,4 +1,5 @@
 <?php
+
 namespace TheFairLib\RocketMQ\Signature;
 
 use TheFairLib\RocketMQ\Constants;
@@ -6,7 +7,7 @@ use TheFairLib\RocketMQ\Requests\BaseRequest;
 
 class Signature
 {
-    public static function SignRequest($accessKey, BaseRequest &$request): string
+    public static function SignRequest($accessKey, BaseRequest $request): string
     {
         $headers = $request->getHeaders();
         $contentMd5 = "";
@@ -19,15 +20,15 @@ class Signature
         }
         $date = $headers['Date'];
         $queryString = $request->getQueryString();
-        $canonicalizedResource = $request->getResourcePath();
+        $resource = $request->getResourcePath();
         if ($queryString != null) {
-            $canonicalizedResource .= "?" . $request->getQueryString();
+            $resource .= "?" . $request->getQueryString();
         }
-        if (0 !== strpos($canonicalizedResource, "/")) {
-            $canonicalizedResource = "/" . $canonicalizedResource;
+        if (0 !== strpos($resource, "/")) {
+            $resource = "/" . $resource;
         }
 
-        $tmpHeaders = array();
+        $tmpHeaders = [];
         foreach ($headers as $key => $value) {
             if (0 === strpos($key, Constants::HEADER_PREFIX)) {
                 $tmpHeaders[$key] = $value;
@@ -35,11 +36,11 @@ class Signature
         }
         ksort($tmpHeaders);
 
-        $canonicalizedHeaders = implode("\n", array_map(function ($v, $k) {
+        $headers = implode("\n", array_map(function ($v, $k) {
             return $k . ":" . $v;
         }, $tmpHeaders, array_keys($tmpHeaders)));
 
-        $stringToSign = strtoupper($request->getMethod()) . "\n" . $contentMd5 . "\n" . $contentType . "\n" . $date . "\n" . $canonicalizedHeaders . "\n" . $canonicalizedResource;
+        $stringToSign = strtoupper($request->getMethod()) . "\n" . $contentMd5 . "\n" . $contentType . "\n" . $date . "\n" . $headers . "\n" . $resource;
 
         return base64_encode(hash_hmac("sha1", $stringToSign, $accessKey, true));
     }

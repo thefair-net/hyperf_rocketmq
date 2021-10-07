@@ -145,7 +145,7 @@ class MQConsumer
      * @throws AckMessageException if any message not deleted
      * @throws MQException if any other exception happends
      */
-    public function ackMessage($receiptHandles): AckMessageResponse
+    public function ackMessage($receiptHandles): ?AckMessageResponse
     {
         $request = new AckMessageRequest($this->instanceId, $this->topicName, $this->consumer, $receiptHandles);
         $response = new AckMessageResponse();

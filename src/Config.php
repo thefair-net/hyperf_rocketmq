@@ -1,5 +1,9 @@
 <?php
+
 namespace TheFairLib\RocketMQ;
+
+use GuzzleHttp\HandlerStack;
+use Hyperf\Guzzle\CoroutineHandler;
 
 class Config
 {
@@ -7,13 +11,15 @@ class Config
     private $connectTimeout;
     private $requestTimeout;
     private $expectContinue;
+    private $handler;
 
     public function __construct()
     {
         $this->proxy = null;
-        $this->requestTimeout = 35; // 35 seconds
+        $this->requestTimeout = 10; // 10 seconds
         $this->connectTimeout = 3;  // 3 seconds
         $this->expectContinue = false;
+        $this->handler = HandlerStack::create(new CoroutineHandler());
     }
 
 
@@ -55,5 +61,15 @@ class Config
     public function setExpectContinue($expectContinue)
     {
         $this->expectContinue = $expectContinue;
+    }
+
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    public function setHandler($handler)
+    {
+        $this->handler = $handler;
     }
 }

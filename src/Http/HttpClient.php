@@ -8,6 +8,7 @@ use Hyperf\Guzzle\CoroutineHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
+use Hyperf\Guzzle\PoolHandler;
 use TheFairLib\RocketMQ\AsyncCallback;
 use TheFairLib\RocketMQ\Config;
 use TheFairLib\RocketMQ\Constants;
@@ -35,7 +36,8 @@ class HttpClient
         $accessKey,
         $securityToken = null,
         Config $config = null
-    ) {
+    )
+    {
         if ($config == null) {
             $config = new Config;
         }
@@ -43,7 +45,8 @@ class HttpClient
         $this->accessKey = $accessKey;
         $this->client = new Client([
             'base_uri' => $endPoint,
-            'handler' => HandlerStack::create(new CoroutineHandler()),
+            'handler' => $config->getHandler(),
+            'timeout' => $config->getRequestTimeout(),
             'defaults' => [
                 'headers' => [
                     'Host' => $endPoint,
