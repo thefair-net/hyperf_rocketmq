@@ -154,7 +154,7 @@ class HttpClient
             }
         } catch (TransferException $e) {
             $message = $e->getMessage();
-            if ($e->hasResponse()) {
+            if (method_exists($e, 'hasResponse') && $e->hasResponse()) {
                 $message = $e->getResponse()->getBody();
             }
             throw new MQException($e->getCode(), $message, $e);

@@ -4,6 +4,7 @@ namespace TheFairLib\RocketMQ;
 
 use GuzzleHttp\HandlerStack;
 use Hyperf\Guzzle\CoroutineHandler;
+use Hyperf\Guzzle\PoolHandler;
 
 class Config
 {
@@ -63,11 +64,17 @@ class Config
         $this->expectContinue = $expectContinue;
     }
 
+    /**
+     * @return HandlerStack|null|PoolHandler
+     */
     public function getHandler()
     {
         return $this->handler;
     }
 
+    /**
+     * @param PoolHandler|HandlerStack $handler
+     */
     public function setHandler($handler)
     {
         $this->handler = $handler;
