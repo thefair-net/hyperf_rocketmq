@@ -6,6 +6,180 @@ hyperf rocketmq 目前只支持 http/https
 
 ## 伪代码 demo 
 
+### 配置文件
+```php
+<?php
+
+declare(strict_types=1);
+
+use Hyperf\Guzzle\PoolHandler;
+
+return [
+    'test' => [
+        'host' => env('ROCKETMQ_HOST'),
+        'app_id' => env('ROCKETMQ_APP_ID'),
+        'app_key' => env('ROCKETMQ_APP_KEY'),
+        'driver' => 'rocketmq',
+        'instance_id' => 'MQ_INST_199174xx',
+        'topic' => [
+            'user_topic' => env('ROCKETMQ_USER_TOPIC', 'user_staging'),
+        ],
+        'http_guzzle' => [
+            'handler' => PoolHandler::class,
+            'option' => [
+                'min_connections' => 10,
+                'max_connections' => 100,
+                'connect_timeout' => 3.0,
+                'wait_timeout' => 30.0,
+                'heartbeat' => -1,
+                'max_idle_time' => 60.0,
+            ],
+        ],
+    ],
+];
+```
+### 配置类
+
+```php
+class Config
+{
+    private $params = [
+        'host',
+        'app_id',
+        'app_key',
+        'driver',
+        'instance_id',
+        'topic',
+        'group_id',
+        'config',
+    ];
+
+    /**
+     * @var Collection
+     */
+    public $config;
+
+    public function __construct(string $clientId)
+    {
+        $config = config("queue.$clientId");
+        if (!$config) {
+            throw new ServiceException(sprintf('%s config info error ', $clientId));
+        }
+        $this->init($config);
+    }
+
+    /**
+     * 初始化项目信息
+     *
+     * @param $config
+     */
+    private function init($config)
+    {
+        $this->config = collect($config);
+        $this->host = $config['host'] ?? '';
+        $this->app_id = $config['app_id'] ?? '';
+        $this->app_key = $config['app_key'] ?? '';
+        $this->driver = $config['driver'] ?? '';
+        $this->instance_id = $config['instance_id'] ?? '';
+        $this->topic = $config['topic'] ?? [];
+        $this->group_id = $config['group_id'] ?? [];
+    }
+
+    /**
+     * 获取config
+     *
+     * @param string $clientId
+     *
+     * @return Config
+     */
+    public function getConfig(string $clientId): Config
+    {
+        $config = $this->config->get('queue.' . $clientId);
+
+        if (!$config) {
+            throw new ServiceException(sprintf('%s queue config info error ', $clientId));
+        }
+        $this->config = collect($config);
+
+        $this->host = $config['host'] ?? '';
+        $this->app_id = $config['app_id'] ?? '';
+        $this->app_key = $config['app_key'] ?? '';
+        $this->driver = $config['driver'] ?? '';
+        $this->instance_id = $config['instance_id'] ?? '';
+        $this->topic = $config['topic'] ?? [];
+        $this->group_id = $config['group_id'] ?? [];
+
+        return $this;
+    }
+
+    public function __get($name)
+    {
+        if (!in_array($name, $this->params)) {
+            throw new ServiceException('error param', ['name' => $name]);
+        }
+        return Context::get(__CLASS__ . ':' . $name);
+    }
+
+    public function __set($name, $value)
+    {
+        if (!in_array($name, $this->params)) {
+            throw new ServiceException('error param', [$name => $value]);
+        }
+        return Context::set(__CLASS__ . ':' . $name, $value);
+    }
+
+    /**
+     * Get the value of host
+     */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /**
+     * Get the value of app_id
+     */
+    public function getAppId(): string
+    {
+        return $this->app_id;
+    }
+
+    /**
+     * Get the value of app_key
+     */
+    public function getAppKey(): string
+    {
+        return $this->app_key;
+    }
+
+    /**
+     * Get the value of driver
+     */
+    public function getDriver(): string
+    {
+        return $this->driver;
+    }
+
+    /**
+     * Get the value of instance_id
+     */
+    public function getInstanceId(): string
+    {
+        return $this->instance_id;
+    }
+
+    public function getTopic(string $topicName)
+    {
+        return $this->topic[$topicName] ?? '';
+    }
+
+    public function getGroupId(string $groupId)
+    {
+        return $this->group_id[$groupId] ?? '';
+    }
+}
+```
+
 ```php
 <?php
 
@@ -131,15 +305,15 @@ class RocketMQ
      * 推入队列
      *
      * @param string $topic
-     * @param BaseMessage $message
+     * @param array $message
      *
      * @return TopicMessage
      */
-    public function publishMessage(string $topic, BaseMessage $message): TopicMessage
+    public function publishMessage(string $topic, array $message): TopicMessage
     {
         $producer = $this->getProducer($topic);
 
-        $publishMessage = new TopicMessage($message->toString());
+        $publishMessage = new TopicMessage("将 $message 转为 string");
         $publishMessage->setMessageKey($message->getMessageType());
 
         if ($message->getStartDeliverTime()) {
@@ -235,4 +409,31 @@ class RocketMQ
         }
     }
 }
+```
+
+
+### 使用 
+
+```php
+<?php
+$config = new Config('test');
+$client = make(RocketMQ::class, [$config]);
+$client->publishMessage('user_test',[
+'uid' => 'xxx'
+]);
+
+//消费
+$client->consumeMessage('topic_name', 'groupId', function (Message $message) {
+try {
+    var_dump($message);
+} catch (Throwable $th) {
+    Logger::get()->error('error#topic:push#id:' . $message->getMessageId(), [
+        'code' => $th->getCode(),
+        'message' => $th->getMessage(),
+        'trace' => $th->getTraceAsString(),
+    ]);
+    }
+});
+
+
 ```
