@@ -60,7 +60,7 @@ trait MessagePropertiesForConsume
         if ($this->properties == null) {
             return null;
         }
-        return $this->properties[$key];
+        return $this->properties[$key] ?? null;
     }
 
     /**
