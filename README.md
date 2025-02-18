@@ -419,7 +419,7 @@ class RocketMQ
 $config = new Config('test');
 $client = make(RocketMQ::class, [$config]);
 $client->publishMessage('user_test',[
-'uid' => 'xxx'
+'uid' => 'xx1x'
 ]);
 
 //消费
