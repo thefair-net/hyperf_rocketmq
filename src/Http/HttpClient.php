@@ -4,11 +4,8 @@ namespace TheFairLib\RocketMQ\Http;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
-use Hyperf\Guzzle\CoroutineHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
-use Hyperf\Guzzle\PoolHandler;
 use TheFairLib\RocketMQ\AsyncCallback;
 use TheFairLib\RocketMQ\Config;
 use TheFairLib\RocketMQ\Constants;
