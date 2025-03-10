@@ -18,15 +18,15 @@
         }
     ],
     "require": {
-        "php": ">=7.3",
-        "hyperf/guzzle": "~2.1.0",
+        "php": ">=8.0",
+        "hyperf/guzzle": "3.0.*",
         "ext-xmlreader": "*",
         "ext-xmlwriter": "*",
         "ext-json": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.14",
-        "phpstan/phpstan": "^0.12"
+        "friendsofphp/php-cs-fixer": "^3.9",
+        "phpstan/phpstan": "^1.8"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +35,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.1-dev"
+            "dev-master": "3.0-dev"
         },
         "hyperf": {
             "config": "TheFairLib\\RocketMQ\\ConfigProvider"
